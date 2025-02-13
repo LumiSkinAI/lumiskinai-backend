@@ -1,6 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+import express, { Request, Response } from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { request } from "http";
+import userRouter from "./src/routes/user.routes";
+dotenv.config();
+
 
 const app = express();
 
@@ -17,14 +21,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Endpoint chính
-app.use("/", (req, res) => {
-  return res.send("SERVER ON"); // Phản hồi khi truy cập vào '/'
-});
+app.use("/", userRouter);
 
 // Khởi tạo PORT
 const PORT = process.env.PORT || 8888;
 
 // Lắng nghe tại port
 const listener = app.listen(PORT, () => {
-  console.log("Server is running on the port " + listener.address().port);
+ const address = listener.address();
+ if (address && typeof address !== "string") {
+   console.log(`Server running at http://localhost:${address.port}`);
+ } else {
+   console.log("Server started but address information is not available.");
+ }
 });
